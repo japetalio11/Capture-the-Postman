@@ -306,10 +306,10 @@ export default function Home() {
                   <div>
                     <p className="text-sm">{successData.message}</p>
                     <p className="mt-8">
-                      <Code>"code"</Code>: {successData.code}
+                      <Code>&apos;code&apos;</Code>: {successData.code}
                     </p>
                     <p className="mt-4">
-                      <Code>"id"</Code>: {successData.id}
+                      <Code>&apos;id&apos;</Code>: {successData.id}
                     </p>
                   </div>
                 )}
@@ -380,7 +380,7 @@ export default function Home() {
                   <div>
                     <p className="text-sm">{fetchedData.message}</p>
                     <p className="mt-8">
-                      <Code>"id"</Code>: {fetchedData.id}
+                      <Code>&apos;id&apos;</Code>: {fetchedData.id}
                     </p>
                   </div>
                 )}
