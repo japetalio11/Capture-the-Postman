@@ -236,7 +236,7 @@ export default function Home() {
         <br />
         <div className="mt-4 text-default-500 text-sm">
           Create new user data with the parameter <Code>username</Code> (your
-          surname) and a <Code>password</Code> (a fictional password) using{" "}
+          surname) and a <Code>password</Code> (a fictional password) using
           <Code>/users</Code> as an endpoint to get the answer for number 1.
         </div>
       </div>
