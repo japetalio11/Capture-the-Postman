@@ -373,7 +373,7 @@ export default function Home() {
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                You're starting out! 🌱
+                You&rsquo;re starting out! 🌱
               </ModalHeader>
               <ModalBody className="p-6">
                 {fetchedData && (
