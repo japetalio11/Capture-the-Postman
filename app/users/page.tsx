@@ -17,7 +17,7 @@ import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { title } from "@/components/primitives";
 import { Pagination } from "@heroui/pagination";
-import { DeleteIcon } from "@heroui/icons";
+import { httpMethods } from '@/lib/constants';
 import { 
   Modal, 
   ModalContent, 
@@ -54,15 +54,6 @@ const columns = [
   { name: "CODE", uid: "code" },
   { name: "NUMBER5", uid: "number5" },
 ];
-
-export const httpMethods = [
-  {key: "GET", label: "GET"},
-  {key: "POST", label: "POST"},
-  {key: "PUT", label: "PUT"},
-  {key: "DELETE", label: "DELETE"},
-  {key: "PATCH", label: "PATCH"},
-];
-
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);

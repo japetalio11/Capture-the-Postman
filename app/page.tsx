@@ -13,14 +13,7 @@ import { useRouter } from 'next/navigation';
 
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
-
-export const httpMethods = [
-  {key: "GET", label: "GET"},
-  {key: "POST", label: "POST"},
-  {key: "PUT", label: "PUT"},
-  {key: "DELETE", label: "DELETE"},
-  {key: "PATCH", label: "PATCH"},
-];
+import { httpMethods } from '@/lib/constants';
 
 export default function Home() {
   const router = useRouter();
