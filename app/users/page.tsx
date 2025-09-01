@@ -1,33 +1,31 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableColumn, 
-  TableBody, 
-  TableRow, 
-  TableCell 
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@heroui/table";
 import { Chip, ChipProps } from "@heroui/chip";
-import { Tooltip } from "@heroui/tooltip";
 import { Spinner } from "@heroui/spinner";
-import { Card, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
-import { title } from "@/components/primitives";
 import { Pagination } from "@heroui/pagination";
-import { httpMethods } from '@/lib/constants';
-import { 
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
-  ModalFooter, 
-  useDisclosure 
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  useDisclosure,
 } from "@heroui/modal";
 import { Select, SelectItem } from "@heroui/select";
 import { Input } from "@heroui/input";
+
+import { httpMethods } from "@/lib/constants";
+import { title } from "@/components/primitives";
 
 interface User {
   _id: string;
@@ -64,9 +62,9 @@ export default function UsersPage() {
   const rowsPerPage = 5;
 
   const {
-    isOpen: isDeleteModalOpen, 
-    onOpen: onDeleteModalOpen, 
-    onOpenChange: onDeleteModalOpenChange
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onOpenChange: onDeleteModalOpenChange,
   } = useDisclosure();
   const [deleteHttpMethod, setDeleteHttpMethod] = useState("");
   const [deleteUserId, setDeleteUserId] = useState("");
@@ -76,7 +74,7 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch("https://fordemo-ot4j.onrender.com/users", {
         method: "GET",
@@ -90,8 +88,9 @@ export default function UsersPage() {
       }
 
       const data: ApiResponse = await response.json();
+
       console.log("Fetched users:", data);
-      
+
       if (data.message && Array.isArray(data.users)) {
         setUsers(data.users);
         setApiMessage(data.message);
@@ -115,11 +114,13 @@ export default function UsersPage() {
 
     if (deleteHttpMethod !== "DELETE") {
       setDeleteError("Invalid HTTP method");
+
       return;
     }
 
     if (!deleteUserId) {
       setDeleteError("Please enter a user ID.");
+
       return;
     }
 
@@ -132,14 +133,18 @@ export default function UsersPage() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
+
       if (response.ok) {
         onDeleteModalOpenChange(false);
         fetchUsers();
       } else {
         const errorData = await response.json();
-        setDeleteError(`Failed to delete user: ${errorData.message || response.statusText}`);
+
+        setDeleteError(
+          `Failed to delete user: ${errorData.message || response.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -160,6 +165,7 @@ export default function UsersPage() {
   const paginatedUsers = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
+
     return users.slice(start, end);
   }, [page, users]);
 
@@ -182,7 +188,12 @@ export default function UsersPage() {
       case "code":
         return (
           <div className="flex items-center">
-            <Chip className="capitalize font-mono text-xs" color="primary" size="sm" variant="flat">
+            <Chip
+              className="capitalize font-mono text-xs"
+              color="primary"
+              size="sm"
+              variant="flat"
+            >
               {user.code}
             </Chip>
           </div>
@@ -190,7 +201,12 @@ export default function UsersPage() {
       case "number5":
         return (
           <div className="flex items-center">
-            <Chip className="capitalize font-mono text-xs" color="secondary" size="sm" variant="flat">
+            <Chip
+              className="capitalize font-mono text-xs"
+              color="secondary"
+              size="sm"
+              variant="flat"
+            >
               {user.number5}
             </Chip>
           </div>
@@ -211,7 +227,9 @@ export default function UsersPage() {
           Retry
         </Button>
         <Link href="/">
-          <Button color="default" variant="bordered">Back to Home</Button>
+          <Button color="default" variant="bordered">
+            Back to Home
+          </Button>
         </Link>
       </div>
     );
@@ -223,11 +241,7 @@ export default function UsersPage() {
         <div className="flex items-center justify-between">
           <span className={title()}>Well done! ✨</span>
           <div className="flex gap-2">
-            <Button 
-              color="danger" 
-              variant="flat" 
-              onPress={onDeleteModalOpen}
-            >
+            <Button color="danger" variant="flat" onPress={onDeleteModalOpen}>
               Delete
             </Button>
             <Link href="/">
@@ -237,106 +251,94 @@ export default function UsersPage() {
             </Link>
           </div>
         </div>
-        <p className="text-default-500 text-sm">
-          {apiMessage}
-        </p>
+        <p className="text-default-500 text-sm">{apiMessage}</p>
       </div>
 
-        <Table 
-        aria-label="Users table"
-        >
+      <Table aria-label="Users table">
         <TableHeader columns={columns}>
-            {(column) => (
-            <TableColumn
-                key={column.uid}
-                align={"start"}
-            >
-                {column.name}
+          {(column) => (
+            <TableColumn key={column.uid} align={"start"}>
+              {column.name}
             </TableColumn>
-            )}
+          )}
         </TableHeader>
         <TableBody
-            items={paginatedUsers}
-            isLoading={loading}
-            loadingContent={<Spinner label="Loading users..." />}
-            emptyContent={
+          emptyContent={
             <div className="flex flex-col items-center gap-2 py-8">
-                <p className="text-default-500">No users found</p>
+              <p className="text-default-500">No users found</p>
             </div>
-            }
+          }
+          isLoading={loading}
+          items={paginatedUsers}
+          loadingContent={<Spinner label="Loading users..." />}
         >
-            {(user) => (
+          {(user) => (
             <TableRow key={user._id}>
-                {(columnKey) => (
+              {(columnKey) => (
                 <TableCell>{renderCell(user, columnKey)}</TableCell>
-                )}
+              )}
             </TableRow>
-            )}
+          )}
         </TableBody>
-        </Table>
+      </Table>
 
-        <div className="flex w-full justify-end">
-            <Pagination
-                isCompact
-                showControls
-                showShadow
-                color="default"
-                page={page}
-                total={pages}
-                onChange={(page) => setPage(page)}
-            />
-        </div>
-        <Modal 
-          isOpen={isDeleteModalOpen} 
-          onOpenChange={onDeleteModalOpenChange}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  Delete User
-                </ModalHeader>
-                <ModalBody className="p-6">
-                  <form onSubmit={handleDeleteSubmit} className="flex flex-col gap-4">
-                    <Select 
-                      label="HTTP Method" 
-                      placeholder="Select the correct HTTP method"
-                      selectedKeys={deleteHttpMethod ? [deleteHttpMethod] : []}
-                      onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setDeleteHttpMethod(selectedKey);
-                        setDeleteError("");
-                      }}
-                      isRequired
-                      isInvalid={!!deleteError}
-                      errorMessage={deleteError}
-                    >
-                      {httpMethods.map((method) => (
-                        <SelectItem key={method.key}>
-                          {method.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                    <Input
-                      label="User ID"
-                      placeholder="Enter the user ID"
-                      value={deleteUserId}
-                      onValueChange={setDeleteUserId}
-                      isRequired
-                    />
-                    <Button
-                      type="submit"
-                      color="danger"
-                      isLoading={isDeleting}
-                    >
-                      {isDeleting ? "Deleting..." : "Delete"}
-                    </Button>
-                  </form>
-                </ModalBody>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+      <div className="flex w-full justify-end">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="default"
+          page={page}
+          total={pages}
+          onChange={(page) => setPage(page)}
+        />
+      </div>
+      <Modal isOpen={isDeleteModalOpen} onOpenChange={onDeleteModalOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Delete User
+              </ModalHeader>
+              <ModalBody className="p-6">
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={handleDeleteSubmit}
+                >
+                  <Select
+                    isRequired
+                    errorMessage={deleteError}
+                    isInvalid={!!deleteError}
+                    label="HTTP Method"
+                    placeholder="Select the correct HTTP method"
+                    selectedKeys={deleteHttpMethod ? [deleteHttpMethod] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0] as string;
+
+                      setDeleteHttpMethod(selectedKey);
+                      setDeleteError("");
+                    }}
+                  >
+                    {httpMethods.map((method) => (
+                      <SelectItem key={method.key}>{method.label}</SelectItem>
+                    ))}
+                  </Select>
+                  <Input
+                    isRequired
+                    label="User ID"
+                    placeholder="Enter the user ID"
+                    value={deleteUserId}
+                    onValueChange={setDeleteUserId}
+                  />
+                  <Button color="danger" isLoading={isDeleting} type="submit">
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </Button>
+                </form>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

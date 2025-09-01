@@ -1,19 +1,22 @@
 "use client";
 
-import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Code } from "@heroui/code";
-import {Select, SelectItem} from "@heroui/select";
-import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
-import { use, useState } from "react";
-import { Snippet } from "@heroui/snippet";
-import { useRouter } from 'next/navigation';
+import { Select, SelectItem } from "@heroui/select";
+import { Card, CardBody } from "@heroui/card";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  useDisclosure,
+} from "@heroui/modal";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
-import { httpMethods } from '@/lib/constants';
+import { title } from "@/components/primitives";
+import { httpMethods } from "@/lib/constants";
 
 export default function Home() {
   const router = useRouter();
@@ -39,30 +42,33 @@ export default function Home() {
   const [secondHttpMethodError, setSecondHttpMethodError] = useState("");
   const [thirdHttpMethodError, setThirdHttpMethodError] = useState("");
   const [userIdError, setUserIdError] = useState("");
-  
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { 
-    isOpen: isSecondModalOpen, 
-    onOpen: onSecondModalOpen, 
-    onOpenChange: onSecondModalOpenChange 
+  const {
+    isOpen: isSecondModalOpen,
+    onOpen: onSecondModalOpen,
+    onOpenChange: onSecondModalOpenChange,
   } = useDisclosure();
-  const { 
-    isOpen: isThirdModalOpen, 
-    onOpen: onThirdModalOpen, 
-    onOpenChange: onThirdModalOpenChange 
+  const {
+    isOpen: isThirdModalOpen,
+    onOpen: onThirdModalOpen,
+    onOpenChange: onThirdModalOpenChange,
   } = useDisclosure();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setInitialHttpMethodError("");
-    
+
     if (initialHttpMethod !== "POST") {
-      setInitialHttpMethodError("Invalid HTTP method. Please select the correct method for creating data.");
+      setInitialHttpMethodError(
+        "Invalid HTTP method. Please select the correct method for creating data.",
+      );
+
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       const response = await fetch("https://fordemo-ot4j.onrender.com/users", {
         method: "POST",
@@ -77,6 +83,7 @@ export default function Home() {
 
       if (response.ok) {
         const data = await response.json();
+
         console.log("Sign up successful:", data);
         setSuccessData(data);
         onOpen();
@@ -94,29 +101,37 @@ export default function Home() {
     e.preventDefault();
     setCodeError("");
     setHttpMethodError("");
-    
+
     if (httpMethod !== "GET") {
-      setHttpMethodError("Invalid HTTP method. Please select the correct method for fetching data.");
+      setHttpMethodError(
+        "Invalid HTTP method. Please select the correct method for fetching data.",
+      );
+
       return;
     }
-    
+
     if (code !== successData?.code) {
       setCodeError("Invalid code. Please enter the correct 6-character code.");
+
       return;
     }
 
     setIsFetching(true);
-    
+
     try {
-      const response = await fetch(`https://fordemo-ot4j.onrender.com/users/${successData.code}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `https://fordemo-ot4j.onrender.com/users/${successData.code}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
+
         console.log("Fetch successful:", data);
         setFetchedData(data);
         onOpenChange(false);
@@ -137,32 +152,40 @@ export default function Home() {
     e.preventDefault();
     setSecondHttpMethodError("");
     setUserIdError("");
-    
+
     if (secondHttpMethod !== "PATCH") {
-      setSecondHttpMethodError("Invalid HTTP method. Please select the correct method for partially updating data.");
+      setSecondHttpMethodError(
+        "Invalid HTTP method. Please select the correct method for partially updating data.",
+      );
+
       return;
     }
-    
+
     if (userId !== fetchedData?.id) {
       setUserIdError("Invalid ID. Please enter the correct ID.");
+
       return;
     }
 
     setIsUpdating(true);
-    
+
     try {
-      const response = await fetch(`https://fordemo-ot4j.onrender.com/users/${fetchedData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `https://fordemo-ot4j.onrender.com/users/${fetchedData.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: newUsername,
+          }),
         },
-        body: JSON.stringify({
-          username: newUsername,
-        }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
+
         console.log("Update successful:", data);
         setUpdatedData(data);
         onSecondModalOpenChange(false);
@@ -182,9 +205,12 @@ export default function Home() {
   const handleRedirectSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setThirdHttpMethodError("");
-    
+
     if (thirdHttpMethod !== "GET") {
-      setThirdHttpMethodError("Invalid HTTP method. Please select the correct method for fetching data.");
+      setThirdHttpMethodError(
+        "Invalid HTTP method. Please select the correct method for fetching data.",
+      );
+
       return;
     }
 
@@ -192,9 +218,8 @@ export default function Home() {
 
     try {
       onThirdModalOpenChange(false);
-      
-      router.push('/users');
-      
+
+      router.push("/users");
     } catch (error) {
       console.error("Redirect error:", error);
       setThirdHttpMethodError("Navigation error occurred. Please try again.");
@@ -210,56 +235,58 @@ export default function Home() {
         <span className={title({ color: "yellow" })}>Postman&nbsp;</span>
         <br />
         <div className="mt-4 text-default-500 text-sm">
-          Create new user data with the parameter <Code>username</Code> (your surname) and a <Code>password</Code> (a fictional password) 
-          using <Code>/users</Code> as an endpoint to get the answer for number 1.
+          Create new user data with the parameter <Code>username</Code> (your
+          surname) and a <Code>password</Code> (a fictional password) using{" "}
+          <Code>/users</Code> as an endpoint to get the answer for number 1.
         </div>
       </div>
 
       <Card className="w-full max-w-md mt-8">
         <CardBody>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <Select 
-              className="max-w" 
-              label="HTTP Method" 
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <Select
+              isRequired
+              className="max-w"
+              errorMessage={initialHttpMethodError}
+              isInvalid={!!initialHttpMethodError}
+              label="HTTP Method"
               placeholder="Select the correct HTTP method"
               selectedKeys={initialHttpMethod ? [initialHttpMethod] : []}
               onSelectionChange={(keys) => {
                 const selectedKey = Array.from(keys)[0] as string;
+
                 setInitialHttpMethod(selectedKey);
                 setInitialHttpMethodError("");
               }}
-              isInvalid={!!initialHttpMethodError}
-              errorMessage={initialHttpMethodError}
-              isRequired
             >
-                {httpMethods.map((httpMethod) => (
+              {httpMethods.map((httpMethod) => (
                 <SelectItem key={httpMethod.key}>{httpMethod.label}</SelectItem>
-                ))}
+              ))}
             </Select>
             <Input
-              type="text"
+              isRequired
               label="Username"
               placeholder="Enter your surname"
+              type="text"
               value={username}
-              onValueChange={setUsername}
-              isRequired
               variant="bordered"
+              onValueChange={setUsername}
             />
             <Input
-              type="password"
+              isRequired
               label="Password"
               placeholder="Enter your password"
+              type="password"
               value={password}
-              onValueChange={setPassword}
-              isRequired
               variant="bordered"
+              onValueChange={setPassword}
             />
             <Button
-              type="submit"
-              color="primary"
-              size="md"
-              isLoading={isLoading}
               className="w-full"
+              color="primary"
+              isLoading={isLoading}
+              size="md"
+              type="submit"
             >
               {isLoading ? "Creating Data..." : "Sign Up"}
             </Button>
@@ -271,65 +298,69 @@ export default function Home() {
         <ModalContent>
           {(onClose) => (
             <>
-            <ModalHeader className="flex flex-col gap-1">
+              <ModalHeader className="flex flex-col gap-1">
                 You got it! 👍
               </ModalHeader>
               <ModalBody className="p-6">
                 {successData && (
                   <div>
-                    <p className="text-sm">
-                      {successData.message}
-                    </p>
+                    <p className="text-sm">{successData.message}</p>
                     <p className="mt-8">
-                    <Code>"code"</Code>: {successData.code}
+                      <Code>"code"</Code>: {successData.code}
                     </p>
                     <p className="mt-4">
-                    <Code>"id"</Code>: {successData.id}
+                      <Code>"id"</Code>: {successData.id}
                     </p>
                   </div>
                 )}
 
-                <form onSubmit={handleCodeSubmit} className="flex flex-col gap-4 mt-8">
-                    <Select 
-                      className="max-w" 
-                      label="HTTP Method" 
-                      placeholder="Select the correct HTTP method"
-                      selectedKeys={httpMethod ? [httpMethod] : []}
-                      onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setHttpMethod(selectedKey);
-                        setHttpMethodError("");
-                      }}
-                      isInvalid={!!httpMethodError}
-                      errorMessage={httpMethodError}
-                    >
-                        {httpMethods.map((httpMethod) => (
-                        <SelectItem key={httpMethod.key}>{httpMethod.label}</SelectItem>
-                        ))}
-                    </Select>
-                    <Input
-                        type="text"
-                        label="Code"
-                        placeholder="Enter the 6 random characters"
-                        value={code}
-                        onValueChange={(value) => {
-                          setCode(value);
-                          setCodeError("");
-                        }}
-                        isRequired
-                        variant="bordered"
-                        isInvalid={!!codeError}
-                        errorMessage={codeError}
-                    />
-                    <Button
-                        type="submit"
-                        color="primary"
-                        size="md"
-                        isLoading={isFetching}
-                        className="w-full"
-                        >
-                        {isFetching ? "Fetching Data..." : "Fetch"}
-                    </Button>
+                <form
+                  className="flex flex-col gap-4 mt-8"
+                  onSubmit={handleCodeSubmit}
+                >
+                  <Select
+                    className="max-w"
+                    errorMessage={httpMethodError}
+                    isInvalid={!!httpMethodError}
+                    label="HTTP Method"
+                    placeholder="Select the correct HTTP method"
+                    selectedKeys={httpMethod ? [httpMethod] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0] as string;
+
+                      setHttpMethod(selectedKey);
+                      setHttpMethodError("");
+                    }}
+                  >
+                    {httpMethods.map((httpMethod) => (
+                      <SelectItem key={httpMethod.key}>
+                        {httpMethod.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Input
+                    isRequired
+                    errorMessage={codeError}
+                    isInvalid={!!codeError}
+                    label="Code"
+                    placeholder="Enter the 6 random characters"
+                    type="text"
+                    value={code}
+                    variant="bordered"
+                    onValueChange={(value) => {
+                      setCode(value);
+                      setCodeError("");
+                    }}
+                  />
+                  <Button
+                    className="w-full"
+                    color="primary"
+                    isLoading={isFetching}
+                    size="md"
+                    type="submit"
+                  >
+                    {isFetching ? "Fetching Data..." : "Fetch"}
+                  </Button>
                 </form>
               </ModalBody>
             </>
@@ -347,67 +378,71 @@ export default function Home() {
               <ModalBody className="p-6">
                 {fetchedData && (
                   <div>
-                    <p className="text-sm">
-                      {fetchedData.message}
-                    </p>
+                    <p className="text-sm">{fetchedData.message}</p>
                     <p className="mt-8">
-                    <Code>"id"</Code>: {fetchedData.id}
+                      <Code>"id"</Code>: {fetchedData.id}
                     </p>
                   </div>
                 )}
 
-                <form onSubmit={handleUpdateSubmit} className="flex flex-col gap-4 mt-8">
-                    <Select 
-                      className="max-w" 
-                      label="HTTP Method" 
-                      placeholder="Select the correct HTTP method"
-                      selectedKeys={secondHttpMethod ? [secondHttpMethod] : []}
-                      onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setSecondHttpMethod(selectedKey);
-                        setSecondHttpMethodError("");
-                      }}
-                      isInvalid={!!secondHttpMethodError}
-                      errorMessage={secondHttpMethodError}
-                    >
-                        {httpMethods.map((httpMethod) => (
-                        <SelectItem key={httpMethod.key}>{httpMethod.label}</SelectItem>
-                        ))}
-                    </Select>
-                    <Input
-                        type="text"
-                        label="Username"
-                        placeholder="Enter new username"
-                        value={newUsername}
-                        onValueChange={(value) => {
-                          setNewUsername(value);
-                        }}
-                        isRequired
-                        variant="bordered"
-                    />
-                    <Input
-                        type="text"
-                        label="Id"
-                        placeholder="Enter the id"
-                        value={userId}
-                        onValueChange={(value) => {
-                          setUserId(value);
-                          setUserIdError("");
-                        }}
-                        isRequired
-                        variant="bordered"
-                        isInvalid={!!userIdError}
-                        errorMessage={userIdError}
-                    />
-                    <Button
-                        type="submit"
-                        color="primary"
-                        size="md"
-                        isLoading={isUpdating}
-                        className="w-full"
-                        >
-                        {isUpdating ? "Partially Updating Data..." : "Update"}
-                    </Button>
+                <form
+                  className="flex flex-col gap-4 mt-8"
+                  onSubmit={handleUpdateSubmit}
+                >
+                  <Select
+                    className="max-w"
+                    errorMessage={secondHttpMethodError}
+                    isInvalid={!!secondHttpMethodError}
+                    label="HTTP Method"
+                    placeholder="Select the correct HTTP method"
+                    selectedKeys={secondHttpMethod ? [secondHttpMethod] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0] as string;
+
+                      setSecondHttpMethod(selectedKey);
+                      setSecondHttpMethodError("");
+                    }}
+                  >
+                    {httpMethods.map((httpMethod) => (
+                      <SelectItem key={httpMethod.key}>
+                        {httpMethod.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Input
+                    isRequired
+                    label="Username"
+                    placeholder="Enter new username"
+                    type="text"
+                    value={newUsername}
+                    variant="bordered"
+                    onValueChange={(value) => {
+                      setNewUsername(value);
+                    }}
+                  />
+                  <Input
+                    isRequired
+                    errorMessage={userIdError}
+                    isInvalid={!!userIdError}
+                    label="Id"
+                    placeholder="Enter the id"
+                    type="text"
+                    value={userId}
+                    variant="bordered"
+                    onValueChange={(value) => {
+                      setUserId(value);
+                      setUserIdError("");
+                    }}
+                  />
+                  <Button
+                    className="w-full"
+                    color="primary"
+                    isLoading={isUpdating}
+                    size="md"
+                    type="submit"
+                  >
+                    {isUpdating ? "Partially Updating Data..." : "Update"}
+                  </Button>
                 </form>
               </ModalBody>
             </>
@@ -425,39 +460,43 @@ export default function Home() {
               <ModalBody className="p-6">
                 {updatedData && (
                   <div>
-                    <p className="text-sm">
-                      {updatedData.message}
-                    </p>
+                    <p className="text-sm">{updatedData.message}</p>
                   </div>
                 )}
-                <form onSubmit={handleRedirectSubmit} className="flex flex-col gap-4 mt-8">
-                    <Select 
-                        className="max-w" 
-                        label="HTTP Method" 
-                        placeholder="Select the correct HTTP method"
-                        selectedKeys={thirdHttpMethod ? [thirdHttpMethod] : []}
-                        onSelectionChange={(keys) => {
-                        const selectedKey = Array.from(keys)[0] as string;
-                        setThirdHttpMethod(selectedKey);
-                        setThirdHttpMethodError("");
-                        }}
-                        isRequired
-                        isInvalid={!!thirdHttpMethodError}
-                        errorMessage={thirdHttpMethodError}
-                    >
-                        {httpMethods.map((httpMethod) => (
-                        <SelectItem key={httpMethod.key}>{httpMethod.label}</SelectItem>
-                        ))}
-                    </Select>
-                    <Button
-                        type="submit"
-                        color="primary"
-                        size="md"
-                        isLoading={isRedirecting}
-                        className="w-full"
-                        >
-                        {isRedirecting ? "Fetching Users..." : "Fetch"}
-                    </Button>
+                <form
+                  className="flex flex-col gap-4 mt-8"
+                  onSubmit={handleRedirectSubmit}
+                >
+                  <Select
+                    isRequired
+                    className="max-w"
+                    errorMessage={thirdHttpMethodError}
+                    isInvalid={!!thirdHttpMethodError}
+                    label="HTTP Method"
+                    placeholder="Select the correct HTTP method"
+                    selectedKeys={thirdHttpMethod ? [thirdHttpMethod] : []}
+                    onSelectionChange={(keys) => {
+                      const selectedKey = Array.from(keys)[0] as string;
+
+                      setThirdHttpMethod(selectedKey);
+                      setThirdHttpMethodError("");
+                    }}
+                  >
+                    {httpMethods.map((httpMethod) => (
+                      <SelectItem key={httpMethod.key}>
+                        {httpMethod.label}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Button
+                    className="w-full"
+                    color="primary"
+                    isLoading={isRedirecting}
+                    size="md"
+                    type="submit"
+                  >
+                    {isRedirecting ? "Fetching Users..." : "Fetch"}
+                  </Button>
                 </form>
               </ModalBody>
             </>
