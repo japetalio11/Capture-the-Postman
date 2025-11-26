@@ -48,19 +48,19 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background relative overflow-hidden">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col gap-2 items-center justify-center pt-8 pb-4">
-          <h1 className={title({ size: "sm" })}>
-            {selected === "login" ? "Welcome Back" : "Create Account"}
-          </h1>
-          <p className="text-small text-default-500">
-            {selected === "login"
-              ? "Enter your details to access your account"
-              : "Sign up to start capturing postmen"}
-          </p>
-        </CardHeader>
-        <CardBody className="px-8 pb-8 overflow-hidden">
+    <div className="flex flex-col gap-8 h-screen w-full items-center justify-center bg-background relative overflow-hidden">
+      <div className="inline-block max-w-xl text-center justify-center px-4">
+        <span className={title()}>Capture the&nbsp;</span>
+        <span className={title({ color: "yellow" })}>Postman&nbsp;</span>
+        <br />
+        <div className="mt-4 text-default-500 text-sm">
+          Welcome to the ultimate playground for API enthusiasts! Dive into a
+          Capture the Flag adventure where you&apos;ll intercept requests,
+          decode responses, and master Postman skills to climb the leaderboard.
+        </div>
+      </div>
+      <Card className="w-full max-w-md mt-8">
+        <CardBody className="overflow-hidden">
           {selected === "login" ? (
             <form className="flex flex-col gap-4" onSubmit={handleLogin}>
               <Input
