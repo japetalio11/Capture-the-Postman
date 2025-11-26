@@ -38,17 +38,6 @@ export default function RootLayout({
             <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://github.com/japetalio11"
-                title="heroui.com homepage"
-              >
-                <span className="text-default-600 text-sm">UI by</span>
-                <p className="text-primary text-sm">Joseph Angelo Q. Petalio</p>
-              </Link>
-            </footer>
           </div>
         </Providers>
       </body>
