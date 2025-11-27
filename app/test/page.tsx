@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 
 import { title } from "@/components/primitives";
 import { httpMethods } from "@/lib/constants";
+import { API_BASE_URL } from "@/lib/constants";
 import { CustomNavbar } from "@/components/custom-navbar";
 
 export default function Home() {
@@ -65,7 +66,8 @@ export default function Home() {
       setInitialHttpMethodError(
         "Invalid HTTP method. Please select the correct method for creating data.",
       );
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
@@ -88,12 +90,18 @@ export default function Home() {
 
         console.log("Sign up successful:", data);
         setSuccessData(data);
+        // Report success to leaderboard backend
+        await postAdjustStatus(true);
         onOpen();
       } else {
         console.error("Sign up failed:", response.status, response.statusText);
+        // Report failure to leaderboard backend
+        await postAdjustStatus(false);
       }
     } catch (error) {
       console.error("Network error:", error);
+      // Report failure to leaderboard backend (network errors also count as failures)
+      await postAdjustStatus(false);
     } finally {
       setIsLoading(false);
     }
@@ -108,13 +116,15 @@ export default function Home() {
       setHttpMethodError(
         "Invalid HTTP method. Please select the correct method for fetching data.",
       );
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
     if (code !== successData?.code) {
       setCodeError("Invalid code. Please enter the correct 6-character code.");
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
@@ -136,15 +146,21 @@ export default function Home() {
 
         console.log("Fetch successful:", data);
         setFetchedData(data);
+        // Report success to leaderboard backend
+        await postAdjustStatus(true);
         onOpenChange(false);
         onSecondModalOpen();
       } else {
         console.error("Fetch failed:", response.status, response.statusText);
         setCodeError("Failed to fetch data. Please try again.");
+        // Report failure to leaderboard backend
+        await postAdjustStatus(false);
       }
     } catch (error) {
       console.error("Network error:", error);
       setCodeError("Network error occurred. Please try again.");
+      // Report failure to leaderboard backend (network errors also count as failures)
+      await postAdjustStatus(false);
     } finally {
       setIsFetching(false);
     }
@@ -159,13 +175,15 @@ export default function Home() {
       setSecondHttpMethodError(
         "Invalid HTTP method. Please select the correct method for partially updating data.",
       );
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
     if (userId !== fetchedData?.id) {
       setUserIdError("Invalid ID. Please enter the correct ID.");
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
@@ -190,15 +208,21 @@ export default function Home() {
 
         console.log("Update successful:", data);
         setUpdatedData(data);
+        // Report success to leaderboard backend
+        await postAdjustStatus(true);
         onSecondModalOpenChange(false);
         onThirdModalOpen();
       } else {
         console.error("Update failed:", response.status, response.statusText);
         setUserIdError("Failed to update data. Please try again.");
+        // Report failure to leaderboard backend
+        await postAdjustStatus(false);
       }
     } catch (error) {
       console.error("Network error:", error);
       setUserIdError("Network error occurred. Please try again.");
+      // Report failure to leaderboard backend (network errors also count as failures)
+      await postAdjustStatus(false);
     } finally {
       setIsUpdating(false);
     }
@@ -212,7 +236,8 @@ export default function Home() {
       setThirdHttpMethodError(
         "Invalid HTTP method. Please select the correct method for fetching data.",
       );
-
+      // Report this user mistake as a failure to leaderboard
+      await postAdjustStatus(false);
       return;
     }
 
@@ -227,6 +252,37 @@ export default function Home() {
       setThirdHttpMethodError("Navigation error occurred. Please try again.");
     } finally {
       setIsRedirecting(false);
+    }
+  };
+
+  // --- Leaderboard reporting helpers ---
+  const getAuthTokenFromCookie = () => {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(/(?:^|; )auth_token=([^;]+)/);
+
+    return match ? match[1] : null;
+  };
+
+  const postAdjustStatus = async (success: boolean) => {
+    const token = getAuthTokenFromCookie();
+
+    // If there's no token, skip reporting to avoid 401s
+    if (!token) {
+      console.info("Skipping leaderboard report because user is not signed in.");
+      return;
+    }
+
+    try {
+      await fetch(`${API_BASE_URL}/leaderboard/adjust`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ success }),
+      });
+    } catch (err) {
+      console.error("Failed to post leaderboard status:", err);
     }
   };
 
