@@ -302,7 +302,7 @@ export default function Home() {
 
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
-            {(onClose) => (
+            {() => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   You got it! 👍
@@ -379,7 +379,7 @@ export default function Home() {
           onOpenChange={onSecondModalOpenChange}
         >
           <ModalContent>
-            {(onClose) => (
+            {() => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   You&rsquo;re starting out! 🌱
@@ -461,7 +461,7 @@ export default function Home() {
 
         <Modal isOpen={isThirdModalOpen} onOpenChange={onThirdModalOpenChange}>
           <ModalContent>
-            {(onClose) => (
+            {() => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
                   You are almost there! 😊

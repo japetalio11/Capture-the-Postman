@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Card, CardBody } from "@heroui/card";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { useRouter } from "next/navigation";
 
 import { title } from "@/components/primitives";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default function AuthPage() {
   const [selected, setSelected] = useState<"login" | "signup">("login");
@@ -21,30 +22,75 @@ export default function AuthPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-    // Set auth cookie to satisfy middleware
-    document.cookie = "auth_token=true; path=/; max-age=3600";
+      if (response.ok) {
+        const data = await response.json();
 
-    router.push("/");
-    router.refresh();
-    setIsLoading(false);
+        // Set auth cookie to satisfy middleware
+        document.cookie = `auth_token=${data.token}; path=/; max-age=3600`;
+
+        router.push("/test");
+        router.refresh();
+      } else {
+        const errorData = await response.json();
+
+        alert(errorData.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An unexpected error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: username,
+          email,
+          password,
+        }),
+      });
 
-    // Set auth cookie to satisfy middleware
-    document.cookie = "auth_token=true; path=/; max-age=3600";
+      if (response.ok) {
+        const data = await response.json();
 
-    router.push("/");
-    router.refresh();
-    setIsLoading(false);
+        // Set auth cookie to satisfy middleware
+        document.cookie = `auth_token=${data.token}; path=/; max-age=3600`;
+
+        router.push("/test");
+        router.refresh();
+      } else {
+        const errorData = await response.json();
+
+        alert(errorData.message || "Sign up failed");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("An unexpected error occurred during sign up");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,12 +111,12 @@ export default function AuthPage() {
             <form className="flex flex-col gap-4" onSubmit={handleLogin}>
               <Input
                 isRequired
-                label="Username"
-                placeholder="Enter your username"
-                type="text"
-                value={username}
+                label="Email"
+                placeholder="Enter your email"
+                type="email"
+                value={email}
                 variant="bordered"
-                onValueChange={setUsername}
+                onValueChange={setEmail}
               />
               <Input
                 isRequired

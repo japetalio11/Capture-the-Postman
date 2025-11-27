@@ -61,11 +61,11 @@ export const CustomNavbar = () => {
 
       {/* Right Content: Edit Account & Logout */}
       <NavbarContent justify="end">
-        <NavbarItem>
+        {/*<NavbarItem>
           <Button color="primary" variant="flat" onPress={onOpen}>
             Edit Account
           </Button>
-        </NavbarItem>
+        </NavbarItem>*/}
         <NavbarItem>
           <Button color="danger" variant="flat" onPress={handleLogout}>
             Logout

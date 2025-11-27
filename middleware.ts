@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const isAuthenticated = request.cookies.has("auth_token");
-  const isAuthPage = request.nextUrl.pathname.startsWith("/");
+  const isAuthPage = request.nextUrl.pathname === "/";
 
   // If the user is not authenticated and is not on the auth page, redirect to /
   if (!isAuthenticated && !isAuthPage) {
